@@ -1,0 +1,22 @@
+# Local credentials
+plant_cam_v4/wifi_secrets.h
+
+# Arduino generated files
+plant_cam_v4/.arduino-build/
+**/.arduino-build/
+
+# Python generated files
+__pycache__/
+*.py[cod]
+
+# Local server logs
+plant_cam_v4/ecodex_local/server.out
+plant_cam_v4/ecodex_local/server.err
+server.out
+server.err
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

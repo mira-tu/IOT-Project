@@ -1,0 +1,34 @@
+{
+  "aloe_vera": {
+    "display_name": "Aloe Vera",
+    "scientific_name": "Aloe barbadensis miller",
+    "about": "I am a water-storing succulent with thick leaves and soothing inner gel. EcoDex often recognizes me by my upright rosette shape and fleshy leaf texture.",
+    "light": "Bright indirect light to full sun",
+    "water": "Water deeply, then let the soil dry well before watering again",
+    "fun_fact": "My leaves work like natural water tanks, which helps me survive dry climates."
+  },
+  "pinstripe_calathea": {
+    "display_name": "Pinstripe Calathea",
+    "scientific_name": "Calathea ornata",
+    "about": "I am a tropical foliage plant known for dark green leaves marked with fine pink or pale pinstripes. My leaf pattern is the feature EcoDex is trying to spot.",
+    "light": "Bright indirect light, never harsh midday sun",
+    "water": "Keep the soil lightly moist but not soggy",
+    "fun_fact": "I am part of the prayer-plant family, so my leaves can shift position through the day."
+  },
+  "snake_plant": {
+    "display_name": "Snake Plant",
+    "scientific_name": "Dracaena trifasciata",
+    "about": "I am a hardy upright plant with sword-like leaves and banded patterns. EcoDex usually notices my tall vertical form and strong leaf contrast.",
+    "light": "Low light to bright indirect light",
+    "water": "Water sparingly and let the soil dry between waterings",
+    "fun_fact": "I am known for tolerating neglect far better than many other houseplants."
+  },
+  "unknown": {
+    "display_name": "Unknown Plant",
+    "scientific_name": "Unclassified",
+    "about": "EcoDex can see that something plant-like may be present, but this view does not match a trained class strongly enough yet.",
+    "light": "Unknown",
+    "water": "Unknown",
+    "fun_fact": "Adding more labeled examples helps EcoDex become a better plant detective."
+  }
+}
