@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoDex - Plant Identifier Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #718096;
+            font-size: 1.1em;
+        }
+
+        .logo {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+
+        .upload-area {
+            border: 3px dashed #cbd5e0;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+        }
+
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .upload-text {
+            color: #4a5568;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .upload-hint {
+            color: #a0aec0;
+            font-size: 0.9em;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .preview-container {
+            display: none;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .preview-container img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .organ-selector {
+            margin: 20px 0;
+        }
+
+        .organ-selector label {
+            display: block;
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .organ-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .organ-btn {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9em;
+            color: #4a5568;
+        }
+
+        .organ-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .organ-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .identify-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+
+        .identify-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .identify-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-card.rank-1 {
+            border-left-color: #48bb78;
+        }
+
+        .result-card.rank-2 {
+            border-left-color: #4299e1;
+        }
+
+        .result-card.rank-3 {
+            border-left-color: #9f7aea;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .rank-badge {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .confidence {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .plant-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .scientific-name {
+            font-style: italic;
+            color: #718096;
+            margin-bottom: 10px;
+        }
+
+        .plant-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .info-item {
+            font-size: 0.9em;
+            color: #4a5568;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .rarity {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .rarity.Common {
+            background: #e6fffa;
+            color: #234e52;
+        }
+
+        .rarity.Uncommon {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .rarity.Rare {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+
+        .rarity.Ultra.Rare {
+            background: #e9d8fd;
+            color: #44337a;
+        }
+
+        .error {
+            display: none;
+            background: #fed7d7;
+            color: #742a2a;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .meta-info {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            color: #718096;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🌿</div>
+            <h1>EcoDex</h1>
+            <p class="subtitle">Plant Identifier Test</p>
+        </div>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📸</div>
+            <div class="upload-text">Click or drag to upload plant photo</div>
+            <div class="upload-hint">Supports JPG, PNG (max 10MB)</div>
+        </div>
+
+        <input type="file" id="fileInput" accept="image/*">
+
+        <div class="preview-container" id="previewContainer">
+            <img id="preview" src="" alt="Preview">
+        </div>
+
+        <div class="organ-selector">
+            <label>What part of the plant is this?</label>
+            <div class="organ-buttons">
+                <button class="organ-btn active" data-organ="leaf">🍃 Leaf</button>
+                <button class="organ-btn" data-organ="flower">🌸 Flower</button>
+                <button class="organ-btn" data-organ="fruit">🍎 Fruit</button>
+                <button class="organ-btn" data-organ="bark">🌳 Bark</button>
+            </div>
+        </div>
+
+        <button class="identify-btn" id="identifyBtn" disabled>
+            Identify Plant
+        </button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px; color: #718096;">Analyzing plant...</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="results" id="results"></div>
+
+        <div class="meta-info" id="metaInfo"></div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('preview');
+        const previewContainer = document.getElementById('previewContainer');
+        const identifyBtn = document.getElementById('identifyBtn');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const error = document.getElementById('error');
+        const metaInfo = document.getElementById('metaInfo');
+        const organButtons = document.querySelectorAll('.organ-btn');
+
+        let selectedFile = null;
+        let selectedOrgan = 'leaf';
+
+        // Upload area click
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            handleFile(file);
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            handleFile(file);
+        });
+
+        // Organ selection
+        organButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                organButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedOrgan = btn.dataset.organ;
+            });
+        });
+
+        // Handle file
+        function handleFile(file) {
+            if (!file || !file.type.startsWith('image/')) {
+                showError('Please upload a valid image file');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                showError('File size must be less than 10MB');
+                return;
+            }
+
+            selectedFile = file;
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                previewContainer.style.display = 'block';
+                identifyBtn.disabled = false;
+            };
+            reader.readAsDataURL(file);
+
+            // Hide previous results
+            results.style.display = 'none';
+            error.style.display = 'none';
+        }
+
+        // Identify button
+        identifyBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            // Show loading
+            loading.style.display = 'block';
+            results.style.display = 'none';
+            error.style.display = 'none';
+            identifyBtn.disabled = true;
+
+            // Create form data
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+            formData.append('organ', selectedOrgan);
+
+            try {
+                const response = await fetch('http://localhost:3000/api/identify', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Identification failed');
+                }
+
+                displayResults(data);
+
+            } catch (err) {
+                showError(err.message || 'Failed to identify plant. Make sure the server is running.');
+            } finally {
+                loading.style.display = 'none';
+                identifyBtn.disabled = false;
+            }
+        });
+
+        // Display results
+        function displayResults(data) {
+            results.innerHTML = '';
+            
+            if (!data.plants || data.plants.length === 0) {
+                showError('No plants identified. Try a clearer photo or different angle.');
+                return;
+            }
+
+            data.plants.forEach((plant, index) => {
+                const card = document.createElement('div');
+                card.className = `result-card rank-${plant.rank}`;
+                
+                const commonName = plant.commonNames.length > 0 
+                    ? plant.commonNames.slice(0, 2).join(', ')
+                    : 'No common name';
+
+                card.innerHTML = `
+                    <div class="result-header">
+                        <span class="rank-badge">#${plant.rank}</span>
+                        <span class="confidence">${plant.confidence}%</span>
+                    </div>
+                    <div class="plant-name">${commonName}</div>
+                    <div class="scientific-name">${plant.scientificName}</div>
+                    <div class="plant-info">
+                        <div class="info-item">
+                            <span class="info-label">Family:</span> ${plant.family.scientific}
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Genus:</span> ${plant.genus}
+                        </div>
+                    </div>
+                    <div>
+                        <span class="rarity ${plant.rarity}">${plant.rarity}</span>
+                    </div>
+                `;
+                
+                results.appendChild(card);
+            });
+
+            results.style.display = 'block';
+
+            // Show meta info
+            if (data.meta) {
+                metaInfo.innerHTML = `
+                    Best Match: <strong>${data.meta.bestMatch}</strong> (${data.meta.bestMatchConfidence}%)<br>
+                    Remaining IDs today: ${data.meta.remainingIdentifications || 'Unlimited'}
+                `;
+                metaInfo.style.display = 'block';
+            }
+        }
+
+        // Show error
+        function showError(message) {
+            error.textContent = '❌ ' + message;
+            error.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

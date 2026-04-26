@@ -1,5 +1,8 @@
 # Local credentials
 plant_cam_v4/wifi_secrets.h
+.env
+*.env
+!.env.example
 
 # Arduino generated files
 plant_cam_v4/.arduino-build/
@@ -8,6 +11,11 @@ plant_cam_v4/.arduino-build/
 # Python generated files
 __pycache__/
 *.py[cod]
+
+# Node.js
+**/node_modules/
+**/uploads/
+package-lock.json
 
 # Local server logs
 *.log
