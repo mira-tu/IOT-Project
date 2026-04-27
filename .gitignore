@@ -1,5 +1,7 @@
 # Local credentials
 plant_cam_v4/wifi_secrets.h
+plant_cam_plantnet/wifi_secrets.h
+plant_cam_plantnet/config.h
 .env
 *.env
 !.env.example
@@ -19,6 +21,7 @@ package-lock.json
 
 # Local server logs
 *.log
+.ecodex/
 plant_cam_v4/ecodex_local/server.out
 plant_cam_v4/ecodex_local/server.err
 server.out
