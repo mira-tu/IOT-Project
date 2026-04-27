@@ -71,6 +71,8 @@ static const bool AUTO_CAPTURE_ENABLED = false;
 static const uint32_t STREAM_DETECT_INTERVAL_MS = 1600;
 static const uint32_t STREAM_FRAME_DELAY_MS = 65;
 static const int DEFAULT_JPEG_QUALITY = 24;
+static const float MIN_IDENTIFY_GREEN_PCT = 8.0f;
+static const float MIN_IDENTIFY_PLANT_SCORE = 6.0f;
 
 // Plant identification state
 String lastIdentifiedPlant = "";
@@ -383,8 +385,23 @@ const $ = id => document.getElementById(id);
 let active = false;
 let poll = null;
 let lastClearRevision = null;
+let lastStatus = null;
+let statusBusy = false;
+let captureBusy = false;
+const STATUS_POLL_MS = 1800;
+const STATUS_TIMEOUT_MS = 2500;
+const CAPTURE_TIMEOUT_MS = 45000;
 function setLog(msg){ $('log').textContent = msg; }
 function setFill(id,value){ $(id).style.width = Math.max(0, Math.min(100, Number(value)||0)) + '%'; }
+async function fetchWithTimeout(url, options={}, timeoutMs=STATUS_TIMEOUT_MS){
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try{
+    return await fetch(url, Object.assign({cache:'no-store'}, options, {signal:controller.signal}));
+  }finally{
+    clearTimeout(timer);
+  }
+}
 async function clearIdentity(sync=true){
   $('plantName').textContent = 'Waiting for capture';
   $('plantMeta').textContent = 'No identification result yet.';
@@ -430,9 +447,9 @@ function startStream(sync=true){
   $('captureBtn').disabled = false;
   active = true;
   if(sync) fetch('/ctl?var=stream&val=1').catch(()=>{});
-  poll = poll || setInterval(getStatus, 900);
+  poll = poll || setInterval(getStatus, STATUS_POLL_MS);
   setLog('Stream started. Hold the plant steady, then capture.');
-  getStatus();
+  getStatus(true);
 }
 function stopStream(sync=true){
   $('stream').src = '';
@@ -465,23 +482,25 @@ function captureErrorMessage(data){
   return text;
 }
 async function capturePlant(){
-  const status = await getStatus();
-  if(!status || !status.stream){
+  if(captureBusy) return;
+  const status = lastStatus || await getStatus(true);
+  if(!(active || (status && status.stream))){
     setLog('Start the stream first, then capture.');
     $('apiBadge').textContent = 'Start stream first';
     $('apiBadge').className = 'badge warn';
     return;
   }
+  captureBusy = true;
   clearIdentity(false);
   $('captureBtn').disabled = true;
   $('apiBadge').textContent = 'Identifying...';
   $('apiBadge').className = 'badge';
   setLog('Capturing the current frame for EcoDex, then Pl@ntNet if needed.');
   try{
-    const r = await fetch('/capture');
+    const r = await fetchWithTimeout('/capture', {}, CAPTURE_TIMEOUT_MS);
     const data = await r.json();
     if(!data.success){
-      await getStatus();
+      await getStatus(true);
       if(data.captured){
         $('apiBadge').textContent = 'Captured, no ID';
         $('apiBadge').className = 'badge warn';
@@ -490,16 +509,17 @@ async function capturePlant(){
       }
       throw new Error(captureErrorMessage(data));
     }
-    await getStatus();
+    await getStatus(true);
     $('apiBadge').textContent = 'Hybrid result received';
     setLog('Identification complete.');
   }catch(err){
-    await getStatus();
+    await getStatus(true);
     $('apiBadge').textContent = 'Capture failed';
     $('apiBadge').className = 'badge warn';
     setLog(err.message || 'Could not identify this capture.');
   }finally{
-    $('captureBtn').disabled = false;
+    captureBusy = false;
+    $('captureBtn').disabled = !(active || (lastStatus && lastStatus.stream));
   }
 }
 function renderReticle(d){
@@ -514,10 +534,14 @@ function renderReticle(d){
   box.style.width = d.tw + '%';
   box.style.height = d.th + '%';
 }
-async function getStatus(){
+async function getStatus(force=false){
+  if(statusBusy || (captureBusy && !force)) return lastStatus;
+  statusBusy = true;
   try{
-    const r = await fetch('/status');
+    const r = await fetchWithTimeout('/status', {}, STATUS_TIMEOUT_MS);
+    if(!r.ok) throw new Error('status unavailable');
     const d = await r.json();
+    lastStatus = d;
     $('detectBadge').textContent = d.detected ? 'Plant detected' : 'Searching leaves';
     $('detectBadge').className = d.detected ? 'badge' : 'badge warn';
     $('blockBadge').textContent = d.blocked ? 'View blocked' : 'View clear';
@@ -528,7 +552,7 @@ async function getStatus(){
     $('thresholdVal').textContent = d.threshold || $('threshold').value;
     if(d.stream && !active) startStream(false);
     if(!d.stream && active) stopStream(false);
-    $('captureBtn').disabled = !d.stream;
+    $('captureBtn').disabled = captureBusy || !d.stream;
     if(lastClearRevision === null) lastClearRevision = d.clearRevision || 0;
     if((d.clearRevision || 0) !== lastClearRevision && !d.plant && !d.hasPhoto){
       lastClearRevision = d.clearRevision || 0;
@@ -568,11 +592,13 @@ async function getStatus(){
     }
     return d;
   }catch(err){
-    if(active) setLog('Waiting for camera telemetry...');
-    return null;
+    if(active && !captureBusy) setLog('Waiting for camera telemetry...');
+    return lastStatus;
+  }finally{
+    statusBusy = false;
   }
 }
-poll = setInterval(getStatus, 900);
+poll = setInterval(getStatus, STATUS_POLL_MS);
 getStatus();
 </script>
 </body>
@@ -1014,8 +1040,12 @@ bool captureAndIdentifyFrame() {
     return false;
   }
 
-  if (!plantDetected) {
-    lastApiError = "Unknown plant: EcoDex did not detect a visible plant, so identification was skipped.";
+  bool hasPlantSignal =
+    (lastGreenPct >= MIN_IDENTIFY_GREEN_PCT) ||
+    (lastPlantScore >= MIN_IDENTIFY_PLANT_SCORE);
+
+  if (!hasPlantSignal) {
+    lastApiError = "Unknown plant: EcoDex did not see enough plant color, so identification was skipped.";
     free(imageCopy);
     return false;
   }
@@ -1129,7 +1159,11 @@ void handlePhysicalButtons() {
     lastCapturePress = now;
     Serial.println("Physical button: capture requested");
     bool success = captureAndIdentifyFrame();
-    Serial.println(success ? "Physical button: identification complete" : "Physical button: capture failed");
+    if (success) {
+      Serial.println("Physical button: identification complete");
+    } else {
+      Serial.printf("Physical button: capture failed: %s\n", lastApiError.c_str());
+    }
   }
 
   if (lastClearState == HIGH && clearState == LOW && (now - lastClearPress) > debounceMs) {

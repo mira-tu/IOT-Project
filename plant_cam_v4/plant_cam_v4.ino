@@ -2,6 +2,11 @@
 #include <WiFi.h>
 #include "wifi_secrets.h"
 #include "esp_http_server.h"
+
+static esp_err_t stream_handler(httpd_req_t *req);
+static esp_err_t status_handler(httpd_req_t *req);
+static esp_err_t ctl_handler(httpd_req_t *req);
+static esp_err_t index_handler(httpd_req_t *req);
 #include "img_converters.h"   // fmt2rgb888 — always present in ESP32 Arduino core
 
 // ─── WiFi ────────────────────────────────────────────────────────────────────
