@@ -1,126 +1,116 @@
 {
-  "dataset": "C:\\Users\\Kaitlyn June\\Downloads\\Ecodex\\dataset",
+  "dataset": "Ecodex/dataset",
   "labels": [
     "aloe_vera",
+    "firecracker_crossandra",
+    "imperial_blue",
     "pinstripe_calathea",
     "snake_plant",
+    "spider_plant",
     "unknown"
   ],
   "split_counts": {
-    "train": 174,
-    "validation": 38,
-    "test": 38
+    "train": 200,
+    "validation": 45,
+    "test": 45
   },
   "image_count_by_class": {
     "aloe_vera": 39,
+    "firecracker_crossandra": 10,
+    "imperial_blue": 10,
     "pinstripe_calathea": 82,
     "snake_plant": 79,
+    "spider_plant": 20,
     "unknown": 50
   },
   "k": 7,
-  "suggested_threshold": 0.61,
+  "suggested_threshold": 0.54,
   "validation": {
     "name": "validation",
-    "count": 38,
-    "accuracy": 0.3684,
+    "count": 45,
+    "accuracy": 0.3556,
     "per_class_accuracy": {
       "aloe_vera": 0.5,
+      "firecracker_crossandra": 0.0,
+      "imperial_blue": 0.0,
       "pinstripe_calathea": 0.4167,
-      "snake_plant": 0.3333,
-      "unknown": 0.25
+      "snake_plant": 0.1667,
+      "spider_plant": 0.3333,
+      "unknown": 0.625
     },
     "examples": [
       {
         "actual": "aloe_vera",
         "predicted": "aloe_vera",
-        "confidence": 0.7186,
+        "confidence": 0.57,
         "top3": [
           {
             "label": "aloe_vera",
-            "confidence": 0.7186
+            "confidence": 0.57
           },
           {
             "label": "snake_plant",
-            "confidence": 0.1412
+            "confidence": 0.43
+          },
+          {
+            "label": "unknown",
+            "confidence": 0.0
+          }
+        ]
+      },
+      {
+        "actual": "aloe_vera",
+        "predicted": "spider_plant",
+        "confidence": 0.4296,
+        "top3": [
+          {
+            "label": "spider_plant",
+            "confidence": 0.4296
           },
           {
             "label": "pinstripe_calathea",
-            "confidence": 0.1402
+            "confidence": 0.2878
+          },
+          {
+            "label": "unknown",
+            "confidence": 0.2826
           }
         ]
       },
       {
         "actual": "aloe_vera",
         "predicted": "unknown",
-        "confidence": 0.5626,
+        "confidence": 0.4341,
         "top3": [
           {
             "label": "unknown",
-            "confidence": 0.5626
-          },
-          {
-            "label": "pinstripe_calathea",
-            "confidence": 0.2979
+            "confidence": 0.4341
           },
           {
             "label": "snake_plant",
-            "confidence": 0.1395
+            "confidence": 0.2828
+          },
+          {
+            "label": "spider_plant",
+            "confidence": 0.1418
           }
         ]
       },
       {
         "actual": "aloe_vera",
-        "predicted": "unknown",
-        "confidence": 0.5763,
+        "predicted": "snake_plant",
+        "confidence": 0.5733,
         "top3": [
           {
-            "label": "unknown",
-            "confidence": 0.5763
-          },
-          {
             "label": "snake_plant",
-            "confidence": 0.2823
+            "confidence": 0.5733
           },
           {
             "label": "pinstripe_calathea",
-            "confidence": 0.1415
-          }
-        ]
-      },
-      {
-        "actual": "aloe_vera",
-        "predicted": "pinstripe_calathea",
-        "confidence": 0.564,
-        "top3": [
-          {
-            "label": "pinstripe_calathea",
-            "confidence": 0.564
-          },
-          {
-            "label": "snake_plant",
-            "confidence": 0.305
-          },
-          {
-            "label": "aloe_vera",
-            "confidence": 0.131
-          }
-        ]
-      },
-      {
-        "actual": "aloe_vera",
-        "predicted": "aloe_vera",
-        "confidence": 0.8416,
-        "top3": [
-          {
-            "label": "aloe_vera",
-            "confidence": 0.8416
+            "confidence": 0.4267
           },
           {
             "label": "unknown",
-            "confidence": 0.1584
-          },
-          {
-            "label": "snake_plant",
             "confidence": 0.0
           }
         ]
@@ -128,133 +118,152 @@
       {
         "actual": "aloe_vera",
         "predicted": "aloe_vera",
-        "confidence": 0.5795,
+        "confidence": 0.7001,
         "top3": [
           {
             "label": "aloe_vera",
-            "confidence": 0.5795
+            "confidence": 0.7001
           },
           {
             "label": "unknown",
-            "confidence": 0.2811
+            "confidence": 0.1566
+          },
+          {
+            "label": "snake_plant",
+            "confidence": 0.1433
+          }
+        ]
+      },
+      {
+        "actual": "aloe_vera",
+        "predicted": "aloe_vera",
+        "confidence": 0.4379,
+        "top3": [
+          {
+            "label": "aloe_vera",
+            "confidence": 0.4379
+          },
+          {
+            "label": "snake_plant",
+            "confidence": 0.2825
+          },
+          {
+            "label": "unknown",
+            "confidence": 0.1411
+          }
+        ]
+      },
+      {
+        "actual": "firecracker_crossandra",
+        "predicted": "unknown",
+        "confidence": 0.5741,
+        "top3": [
+          {
+            "label": "unknown",
+            "confidence": 0.5741
           },
           {
             "label": "pinstripe_calathea",
-            "confidence": 0.1395
+            "confidence": 0.2854
+          },
+          {
+            "label": "snake_plant",
+            "confidence": 0.1405
+          }
+        ]
+      },
+      {
+        "actual": "firecracker_crossandra",
+        "predicted": "unknown",
+        "confidence": 0.5853,
+        "top3": [
+          {
+            "label": "unknown",
+            "confidence": 0.5853
+          },
+          {
+            "label": "snake_plant",
+            "confidence": 0.1419
+          },
+          {
+            "label": "aloe_vera",
+            "confidence": 0.1378
+          }
+        ]
+      },
+      {
+        "actual": "imperial_blue",
+        "predicted": "aloe_vera",
+        "confidence": 0.2926,
+        "top3": [
+          {
+            "label": "aloe_vera",
+            "confidence": 0.2926
+          },
+          {
+            "label": "unknown",
+            "confidence": 0.2855
+          },
+          {
+            "label": "snake_plant",
+            "confidence": 0.2818
+          }
+        ]
+      },
+      {
+        "actual": "imperial_blue",
+        "predicted": "unknown",
+        "confidence": 0.4383,
+        "top3": [
+          {
+            "label": "unknown",
+            "confidence": 0.4383
+          },
+          {
+            "label": "aloe_vera",
+            "confidence": 0.2812
+          },
+          {
+            "label": "spider_plant",
+            "confidence": 0.1456
           }
         ]
       },
       {
         "actual": "pinstripe_calathea",
         "predicted": "unknown",
-        "confidence": 0.5756,
+        "confidence": 0.4365,
         "top3": [
           {
             "label": "unknown",
+            "confidence": 0.4365
+          },
+          {
+            "label": "pinstripe_calathea",
+            "confidence": 0.2882
+          },
+          {
+            "label": "snake_plant",
+            "confidence": 0.2753
+          }
+        ]
+      },
+      {
+        "actual": "pinstripe_calathea",
+        "predicted": "spider_plant",
+        "confidence": 0.5756,
+        "top3": [
+          {
+            "label": "spider_plant",
             "confidence": 0.5756
           },
           {
             "label": "pinstripe_calathea",
-            "confidence": 0.2835
-          },
-          {
-            "label": "snake_plant",
-            "confidence": 0.1409
-          }
-        ]
-      },
-      {
-        "actual": "pinstripe_calathea",
-        "predicted": "snake_plant",
-        "confidence": 0.4526,
-        "top3": [
-          {
-            "label": "snake_plant",
-            "confidence": 0.4526
-          },
-          {
-            "label": "pinstripe_calathea",
-            "confidence": 0.274
+            "confidence": 0.4244
           },
           {
             "label": "unknown",
-            "confidence": 0.2734
-          }
-        ]
-      },
-      {
-        "actual": "pinstripe_calathea",
-        "predicted": "snake_plant",
-        "confidence": 0.5674,
-        "top3": [
-          {
-            "label": "snake_plant",
-            "confidence": 0.5674
-          },
-          {
-            "label": "unknown",
-            "confidence": 0.2916
-          },
-          {
-            "label": "pinstripe_calathea",
-            "confidence": 0.141
-          }
-        ]
-      },
-      {
-        "actual": "pinstripe_calathea",
-        "predicted": "pinstripe_calathea",
-        "confidence": 0.8603,
-        "top3": [
-          {
-            "label": "pinstripe_calathea",
-            "confidence": 0.8603
-          },
-          {
-            "label": "unknown",
-            "confidence": 0.1397
-          },
-          {
-            "label": "snake_plant",
             "confidence": 0.0
-          }
-        ]
-      },
-      {
-        "actual": "pinstripe_calathea",
-        "predicted": "pinstripe_calathea",
-        "confidence": 0.578,
-        "top3": [
-          {
-            "label": "pinstripe_calathea",
-            "confidence": 0.578
-          },
-          {
-            "label": "unknown",
-            "confidence": 0.2747
-          },
-          {
-            "label": "aloe_vera",
-            "confidence": 0.1474
-          }
-        ]
-      },
-      {
-        "actual": "pinstripe_calathea",
-        "predicted": "aloe_vera",
-        "confidence": 0.567,
-        "top3": [
-          {
-            "label": "aloe_vera",
-            "confidence": 0.567
-          },
-          {
-            "label": "unknown",
-            "confidence": 0.1493
-          },
-          {
-            "label": "snake_plant",
-            "confidence": 0.1434
           }
         ]
       }
@@ -262,240 +271,243 @@
   },
   "test": {
     "name": "test",
-    "count": 38,
-    "accuracy": 0.4737,
+    "count": 45,
+    "accuracy": 0.3556,
     "per_class_accuracy": {
-      "aloe_vera": 0.6667,
-      "pinstripe_calathea": 0.4167,
-      "snake_plant": 0.25,
+      "aloe_vera": 0.5,
+      "firecracker_crossandra": 0.0,
+      "imperial_blue": 0.0,
+      "pinstripe_calathea": 0.3333,
+      "snake_plant": 0.1667,
+      "spider_plant": 0.3333,
       "unknown": 0.75
     },
     "examples": [
       {
         "actual": "aloe_vera",
         "predicted": "unknown",
-        "confidence": 0.4325,
+        "confidence": 0.5743,
         "top3": [
           {
             "label": "unknown",
-            "confidence": 0.4325
+            "confidence": 0.5743
           },
           {
             "label": "aloe_vera",
-            "confidence": 0.2831
+            "confidence": 0.1434
           },
           {
             "label": "snake_plant",
+            "confidence": 0.1424
+          }
+        ]
+      },
+      {
+        "actual": "aloe_vera",
+        "predicted": "aloe_vera",
+        "confidence": 0.5742,
+        "top3": [
+          {
+            "label": "aloe_vera",
+            "confidence": 0.5742
+          },
+          {
+            "label": "spider_plant",
+            "confidence": 0.2828
+          },
+          {
+            "label": "unknown",
+            "confidence": 0.143
+          }
+        ]
+      },
+      {
+        "actual": "aloe_vera",
+        "predicted": "pinstripe_calathea",
+        "confidence": 0.4445,
+        "top3": [
+          {
+            "label": "pinstripe_calathea",
+            "confidence": 0.4445
+          },
+          {
+            "label": "aloe_vera",
+            "confidence": 0.4182
+          },
+          {
+            "label": "snake_plant",
+            "confidence": 0.1374
+          }
+        ]
+      },
+      {
+        "actual": "aloe_vera",
+        "predicted": "spider_plant",
+        "confidence": 0.4279,
+        "top3": [
+          {
+            "label": "spider_plant",
+            "confidence": 0.4279
+          },
+          {
+            "label": "aloe_vera",
+            "confidence": 0.2893
+          },
+          {
+            "label": "snake_plant",
+            "confidence": 0.1424
+          }
+        ]
+      },
+      {
+        "actual": "aloe_vera",
+        "predicted": "aloe_vera",
+        "confidence": 0.4338,
+        "top3": [
+          {
+            "label": "aloe_vera",
+            "confidence": 0.4338
+          },
+          {
+            "label": "pinstripe_calathea",
+            "confidence": 0.2776
+          },
+          {
+            "label": "spider_plant",
+            "confidence": 0.148
+          }
+        ]
+      },
+      {
+        "actual": "aloe_vera",
+        "predicted": "aloe_vera",
+        "confidence": 0.8687,
+        "top3": [
+          {
+            "label": "aloe_vera",
+            "confidence": 0.8687
+          },
+          {
+            "label": "snake_plant",
+            "confidence": 0.1313
+          },
+          {
+            "label": "unknown",
+            "confidence": 0.0
+          }
+        ]
+      },
+      {
+        "actual": "firecracker_crossandra",
+        "predicted": "unknown",
+        "confidence": 0.4293,
+        "top3": [
+          {
+            "label": "unknown",
+            "confidence": 0.4293
+          },
+          {
+            "label": "firecracker_crossandra",
+            "confidence": 0.4266
+          },
+          {
+            "label": "snake_plant",
+            "confidence": 0.1441
+          }
+        ]
+      },
+      {
+        "actual": "firecracker_crossandra",
+        "predicted": "unknown",
+        "confidence": 0.5771,
+        "top3": [
+          {
+            "label": "unknown",
+            "confidence": 0.5771
+          },
+          {
+            "label": "snake_plant",
+            "confidence": 0.4229
+          },
+          {
+            "label": "spider_plant",
+            "confidence": 0.0
+          }
+        ]
+      },
+      {
+        "actual": "imperial_blue",
+        "predicted": "spider_plant",
+        "confidence": 0.4287,
+        "top3": [
+          {
+            "label": "spider_plant",
+            "confidence": 0.4287
+          },
+          {
+            "label": "unknown",
+            "confidence": 0.2842
+          },
+          {
+            "label": "aloe_vera",
             "confidence": 0.1438
           }
         ]
       },
       {
-        "actual": "aloe_vera",
-        "predicted": "aloe_vera",
-        "confidence": 0.5764,
-        "top3": [
-          {
-            "label": "aloe_vera",
-            "confidence": 0.5764
-          },
-          {
-            "label": "unknown",
-            "confidence": 0.2837
-          },
-          {
-            "label": "snake_plant",
-            "confidence": 0.1399
-          }
-        ]
-      },
-      {
-        "actual": "aloe_vera",
-        "predicted": "pinstripe_calathea",
-        "confidence": 0.4428,
-        "top3": [
-          {
-            "label": "pinstripe_calathea",
-            "confidence": 0.4428
-          },
-          {
-            "label": "aloe_vera",
-            "confidence": 0.2801
-          },
-          {
-            "label": "snake_plant",
-            "confidence": 0.1392
-          }
-        ]
-      },
-      {
-        "actual": "aloe_vera",
-        "predicted": "aloe_vera",
-        "confidence": 0.7144,
-        "top3": [
-          {
-            "label": "aloe_vera",
-            "confidence": 0.7144
-          },
-          {
-            "label": "unknown",
-            "confidence": 0.1432
-          },
-          {
-            "label": "snake_plant",
-            "confidence": 0.1425
-          }
-        ]
-      },
-      {
-        "actual": "aloe_vera",
-        "predicted": "aloe_vera",
-        "confidence": 0.7205,
-        "top3": [
-          {
-            "label": "aloe_vera",
-            "confidence": 0.7205
-          },
-          {
-            "label": "pinstripe_calathea",
-            "confidence": 0.1403
-          },
-          {
-            "label": "unknown",
-            "confidence": 0.1392
-          }
-        ]
-      },
-      {
-        "actual": "aloe_vera",
-        "predicted": "aloe_vera",
-        "confidence": 0.8684,
-        "top3": [
-          {
-            "label": "aloe_vera",
-            "confidence": 0.8684
-          },
-          {
-            "label": "unknown",
-            "confidence": 0.1316
-          },
-          {
-            "label": "snake_plant",
-            "confidence": 0.0
-          }
-        ]
-      },
-      {
-        "actual": "pinstripe_calathea",
-        "predicted": "snake_plant",
-        "confidence": 0.4307,
-        "top3": [
-          {
-            "label": "snake_plant",
-            "confidence": 0.4307
-          },
-          {
-            "label": "pinstripe_calathea",
-            "confidence": 0.3026
-          },
-          {
-            "label": "aloe_vera",
-            "confidence": 0.1335
-          }
-        ]
-      },
-      {
-        "actual": "pinstripe_calathea",
-        "predicted": "snake_plant",
-        "confidence": 0.4316,
-        "top3": [
-          {
-            "label": "snake_plant",
-            "confidence": 0.4316
-          },
-          {
-            "label": "pinstripe_calathea",
-            "confidence": 0.2885
-          },
-          {
-            "label": "aloe_vera",
-            "confidence": 0.2799
-          }
-        ]
-      },
-      {
-        "actual": "pinstripe_calathea",
-        "predicted": "snake_plant",
-        "confidence": 0.7093,
-        "top3": [
-          {
-            "label": "snake_plant",
-            "confidence": 0.7093
-          },
-          {
-            "label": "aloe_vera",
-            "confidence": 0.1506
-          },
-          {
-            "label": "pinstripe_calathea",
-            "confidence": 0.1402
-          }
-        ]
-      },
-      {
-        "actual": "pinstripe_calathea",
-        "predicted": "pinstripe_calathea",
-        "confidence": 0.8641,
-        "top3": [
-          {
-            "label": "pinstripe_calathea",
-            "confidence": 0.8641
-          },
-          {
-            "label": "snake_plant",
-            "confidence": 0.1359
-          },
-          {
-            "label": "unknown",
-            "confidence": 0.0
-          }
-        ]
-      },
-      {
-        "actual": "pinstripe_calathea",
+        "actual": "imperial_blue",
         "predicted": "unknown",
-        "confidence": 0.7251,
+        "confidence": 0.4343,
         "top3": [
           {
             "label": "unknown",
-            "confidence": 0.7251
-          },
-          {
-            "label": "snake_plant",
-            "confidence": 0.1396
+            "confidence": 0.4343
           },
           {
             "label": "pinstripe_calathea",
-            "confidence": 0.1353
+            "confidence": 0.2879
+          },
+          {
+            "label": "spider_plant",
+            "confidence": 0.1401
           }
         ]
       },
       {
         "actual": "pinstripe_calathea",
-        "predicted": "unknown",
-        "confidence": 0.4328,
+        "predicted": "spider_plant",
+        "confidence": 0.2951,
         "top3": [
           {
-            "label": "unknown",
-            "confidence": 0.4328
+            "label": "spider_plant",
+            "confidence": 0.2951
           },
           {
-            "label": "snake_plant",
-            "confidence": 0.285
+            "label": "pinstripe_calathea",
+            "confidence": 0.2814
           },
           {
             "label": "aloe_vera",
-            "confidence": 0.1419
+            "confidence": 0.1451
+          }
+        ]
+      },
+      {
+        "actual": "pinstripe_calathea",
+        "predicted": "aloe_vera",
+        "confidence": 0.41,
+        "top3": [
+          {
+            "label": "aloe_vera",
+            "confidence": 0.41
+          },
+          {
+            "label": "pinstripe_calathea",
+            "confidence": 0.3234
+          },
+          {
+            "label": "imperial_blue",
+            "confidence": 0.1337
           }
         ]
       }

@@ -2,9 +2,9 @@
   "name": "ecodex-plantnet-api",
   "version": "1.0.0",
   "description": "EcoDex plant identification using Pl@ntNet API",
-  "main": "express-api-server.js",
+  "main": "hybrid-server.js",
   "scripts": {
-    "start": "node express-api-server.js",
+    "start": "node hybrid-server.js",
     "hybrid": "node hybrid-server.js",
     "dev": "nodemon hybrid-server.js",
     "test": "node nodejs-example.js"

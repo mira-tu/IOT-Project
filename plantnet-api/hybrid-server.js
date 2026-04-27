@@ -9,15 +9,21 @@ const axios = require('axios');
 const FormData = require('form-data');
 const cors = require('cors');
 const fs = require('fs');
+const path = require('path');
 
 const app = express();
-const upload = multer({ dest: 'uploads/' });
+const UPLOAD_DIR = path.join(__dirname, 'uploads');
+fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+
+const upload = multer({ dest: UPLOAD_DIR });
 
 // Configuration
 const PLANTNET_API_KEY = process.env.PLANTNET_API_KEY || 'YOUR_API_KEY_HERE';
 const LOCAL_MODEL_URL = process.env.LOCAL_MODEL_URL || 'http://127.0.0.1:8090';
 const PORT = process.env.PORT || 3000;
 const CONFIDENCE_THRESHOLD = parseFloat(process.env.CONFIDENCE_THRESHOLD || '0.65');
+const LOCAL_MODEL_MIN_CONFIDENCE = parseFloat(process.env.LOCAL_MODEL_MIN_CONFIDENCE || '0.70');
+let activeThreshold = CONFIDENCE_THRESHOLD;
 
 // Middleware
 app.use(cors());
@@ -44,6 +50,34 @@ async function checkLocalModel() {
   }
 }
 
+async function getLocalModelHealth() {
+  try {
+    const response = await axios.get(`${LOCAL_MODEL_URL}/health`, { timeout: 2000 });
+    return response.data;
+  } catch (error) {
+    return null;
+  }
+}
+
+async function getTrainedLabels() {
+  const localHealth = await getLocalModelHealth();
+  return (localHealth?.labels || []).filter(label => label !== 'unknown');
+}
+
+function displayName(label) {
+  return label
+    .split('_')
+    .filter(Boolean)
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+function plantNetAbout(plant) {
+  const name = plant.commonName || plant.scientificName;
+  const family = plant.family ? ` in the ${plant.family} family` : '';
+  return `${name} was identified by Pl@ntNet as ${plant.scientificName}${family}. Pl@ntNet gives the species match; EcoDex adds the visual health check from the camera brightness, green signal, and plant score.`;
+}
+
 // Try local model first
 async function tryLocalModel(imageBuffer) {
   try {
@@ -60,8 +94,11 @@ async function tryLocalModel(imageBuffer) {
     const result = response.data;
     console.log(`   Local model: ${result.label} (${(result.confidence * 100).toFixed(1)}% confidence)`);
 
-    // Return local result if confident and not unknown
-    if (result.accepted && result.label !== 'unknown' && result.confidence >= CONFIDENCE_THRESHOLD) {
+    const localConfidence = result.confidence || 0;
+
+    // The local model is lightweight and can over-guess. Use it only when it
+    // is clearly confident; otherwise let Pl@ntNet handle the photo.
+    if (result.accepted && result.label !== 'unknown' && localConfidence >= LOCAL_MODEL_MIN_CONFIDENCE) {
       return {
         source: 'local_model',
         success: true,
@@ -190,7 +227,7 @@ app.post('/api/identify', upload.single('image'), async (req, res) => {
         message: `Identified using your trained model: ${localResult.plant.commonName}`,
         confidence: localResult.confidence,
         plant: localResult.plant,
-        trainedPlants: ['aloe_vera', 'pinstripe_calathea', 'snake_plant', 'spider_plant']
+        trainedPlants: await getTrainedLabels()
       });
     }
 
@@ -240,21 +277,45 @@ app.post('/api/identify', upload.single('image'), async (req, res) => {
 });
 
 // Raw image endpoint (for ESP32-CAM)
-app.post('/api/identify-raw', async (req, res) => {
+app.post('/api/identify-raw', express.raw({ type: ['image/jpeg', 'application/octet-stream'], limit: '8mb' }), async (req, res) => {
   try {
     if (!req.body || req.body.length === 0) {
       return res.status(400).json({ error: 'No image data provided' });
     }
 
     const organ = req.query.organ || 'leaf';
-    const tempPath = `uploads/esp32-${Date.now()}.jpg`;
+    const preferPlantNet = organ !== 'leaf';
+    const tempPath = path.join(UPLOAD_DIR, `esp32-${Date.now()}.jpg`);
     fs.writeFileSync(tempPath, req.body);
 
     console.log('\n🌿 === HYBRID IDENTIFICATION (ESP32) ===');
 
-    // Step 1: Try local model
     const imageBuffer = fs.readFileSync(tempPath);
-    const localResult = await tryLocalModel(imageBuffer);
+    let localResult = null;
+    let apiResult = null;
+
+    if (preferPlantNet) {
+      console.log(`Organ is ${organ}; trying Pl@ntNet first.`);
+      apiResult = await tryPlantNetAPI(tempPath, organ);
+      if (apiResult.success) {
+        fs.unlinkSync(tempPath);
+        return res.json({
+          success: true,
+          source: 'plantnet_api',
+          plant: apiResult.plant.scientificName,
+          scientificName: apiResult.plant.scientificName,
+          commonName: apiResult.plant.commonName,
+          family: apiResult.plant.family,
+          confidence: apiResult.confidence,
+          light: 'Not provided by Pl@ntNet. Use a care guide for this exact species.',
+          water: 'Not provided by Pl@ntNet. Check soil moisture and species care needs.',
+          about: plantNetAbout(apiResult.plant)
+        });
+      }
+    }
+
+    // Step 1: Try local model
+    localResult = await tryLocalModel(imageBuffer);
 
     if (localResult.success) {
       console.log('✅ Using LOCAL MODEL result');
@@ -276,7 +337,7 @@ app.post('/api/identify-raw', async (req, res) => {
 
     // Step 2: Try Pl@ntNet API
     console.log(`⚠️  Local: ${localResult.reason}, trying API...`);
-    const apiResult = await tryPlantNetAPI(tempPath, organ);
+    apiResult = apiResult || await tryPlantNetAPI(tempPath, organ);
     fs.unlinkSync(tempPath);
 
     if (apiResult.success) {
@@ -289,14 +350,27 @@ app.post('/api/identify-raw', async (req, res) => {
         scientificName: apiResult.plant.scientificName,
         commonName: apiResult.plant.commonName,
         family: apiResult.plant.family,
-        confidence: apiResult.confidence
+        confidence: apiResult.confidence,
+        light: 'Not provided by Pl@ntNet. Use a care guide for this exact species.',
+        water: 'Not provided by Pl@ntNet. Check soil moisture and species care needs.',
+        about: plantNetAbout(apiResult.plant)
       });
     }
 
     // Both failed
-    return res.status(500).json({
+    return res.status(422).json({
       success: false,
-      error: 'Could not identify plant'
+      error: 'Could not identify plant',
+      localModel: {
+        reason: localResult.reason,
+        confidence: localResult.confidence,
+        label: localResult.raw?.label || null,
+        accepted: localResult.raw?.accepted ?? false
+      },
+      plantnetAPI: {
+        reason: apiResult.reason,
+        error: apiResult.error
+      }
     });
 
   } catch (error) {
@@ -309,17 +383,24 @@ app.post('/api/identify-raw', async (req, res) => {
 });
 
 // Get info about trained plants
-app.get('/api/trained-plants', (req, res) => {
+app.get('/api/trained-plants', async (req, res) => {
+  const localHealth = await getLocalModelHealth();
+  const labels = localHealth?.labels || [];
+  const plants = labels
+    .filter(label => label !== 'unknown')
+    .map(label => ({
+      label,
+      name: displayName(label),
+      trained: true
+    }));
+
   res.json({
-    count: 4,
-    plants: [
-      { name: 'Aloe Vera', photos: 40, trained: true },
-      { name: 'Pinstripe Calathea', photos: 82, trained: true },
-      { name: 'Snake Plant', photos: 80, trained: true },
-      { name: 'Spider Plant', photos: 21, trained: true }
-    ],
+    count: plants.length,
+    plants,
     fallback: 'Pl@ntNet API (77,000+ species)',
-    localModelUrl: LOCAL_MODEL_URL
+    localModelUrl: LOCAL_MODEL_URL,
+    localModelOnline: Boolean(localHealth),
+    threshold: localHealth?.threshold ?? CONFIDENCE_THRESHOLD
   });
 });
 
@@ -335,7 +416,10 @@ app.listen(PORT, async () => {
   const localAvailable = await checkLocalModel();
   if (localAvailable) {
     console.log(`   ✅ Local model is ONLINE (teammate's trained model)`);
-    console.log(`   📚 Trained plants: Aloe Vera, Pinstripe Calathea, Snake Plant, Spider Plant`);
+    const localHealth = await getLocalModelHealth();
+    activeThreshold = localHealth?.threshold ?? CONFIDENCE_THRESHOLD;
+    const labels = (localHealth?.labels || []).filter(label => label !== 'unknown');
+    console.log(`   📚 Trained plants: ${labels.map(displayName).join(', ') || 'No labels reported'}`);
   } else {
     console.log(`   ⚠️  Local model is OFFLINE - will use Pl@ntNet API only`);
     console.log(`   💡 Start local model: cd plant_cam_v4/ecodex_local && python server.py`);
@@ -344,7 +428,7 @@ app.listen(PORT, async () => {
   console.log(`\n🌐 Pl@ntNet API: ${PLANTNET_API_KEY ? 'Configured' : 'NOT CONFIGURED'}`);
   console.log(`   📊 Fallback for unknown plants (77,000+ species)`);
   console.log(`\n🎯 Strategy: Local model first, Pl@ntNet API as fallback`);
-  console.log(`   Confidence threshold: ${(CONFIDENCE_THRESHOLD * 100).toFixed(0)}%\n`);
+  console.log(`   Confidence threshold: ${(activeThreshold * 100).toFixed(0)}%\n`);
 });
 
 module.exports = app;

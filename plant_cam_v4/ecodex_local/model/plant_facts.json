@@ -7,6 +7,22 @@
     "water": "Water deeply, then let the soil dry well before watering again",
     "fun_fact": "My leaves work like natural water tanks, which helps me survive dry climates."
   },
+  "firecracker_crossandra": {
+    "display_name": "Firecracker Crossandra",
+    "scientific_name": "Crossandra infundibuliformis",
+    "about": "I am a tropical flowering plant with glossy green leaves and bright orange flower clusters. EcoDex should look for the orange blooms together with the leaf shape, not only the green background.",
+    "light": "Bright indirect light with gentle morning sun",
+    "water": "Keep soil lightly moist, but avoid leaving the roots in standing water",
+    "fun_fact": "My bright flowers are the strongest clue that separates me from plain green foliage plants."
+  },
+  "imperial_blue": {
+    "display_name": "Imperial Blue",
+    "scientific_name": "Imperial Blue flowering plant",
+    "about": "I am included as a trained EcoDex class because of my blue or violet flower color and surrounding green leaves. Use the Flower plant-part mode when the flower is the main subject.",
+    "light": "Bright light or partial sun",
+    "water": "Water when the top layer of soil starts to dry",
+    "fun_fact": "Flower color can help EcoDex separate this class from plants that have similar leaves."
+  },
   "pinstripe_calathea": {
     "display_name": "Pinstripe Calathea",
     "scientific_name": "Calathea ornata",
@@ -22,6 +38,14 @@
     "light": "Low light to bright indirect light",
     "water": "Water sparingly and let the soil dry between waterings",
     "fun_fact": "I am known for tolerating neglect far better than many other houseplants."
+  },
+  "spider_plant": {
+    "display_name": "Spider Plant",
+    "scientific_name": "Chlorophytum comosum",
+    "about": "I am a common houseplant with arching, narrow leaves, often green with white or pale stripes. EcoDex should look for the fountain-like leaf shape and the striped leaf pattern.",
+    "light": "Bright indirect light, but I can tolerate lower indoor light",
+    "water": "Water when the top soil feels dry, then let excess water drain away",
+    "fun_fact": "Mature spider plants can grow small plantlets that hang from long stems."
   },
   "unknown": {
     "display_name": "Unknown Plant",

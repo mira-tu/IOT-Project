@@ -18,7 +18,8 @@ from ecodex_ml import (
 )
 
 
-DEFAULT_DATASET = Path(r"C:\Users\Kaitlyn June\Downloads\Ecodex\dataset")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_DATASET = PROJECT_ROOT / "Ecodex" / "dataset"
 DEFAULT_MODEL = Path(__file__).resolve().parent / "model" / "ecodex_baseline.npz"
 
 
@@ -130,9 +131,13 @@ def main() -> None:
         class_names=labels,
         k=args.k,
     )
+    try:
+        metrics_dataset = args.dataset.resolve().relative_to(PROJECT_ROOT)
+    except ValueError:
+        metrics_dataset = args.dataset
 
     metrics = {
-        "dataset": str(args.dataset),
+        "dataset": str(metrics_dataset).replace("\\", "/"),
         "labels": labels,
         "split_counts": {
             "train": len(train_samples),
